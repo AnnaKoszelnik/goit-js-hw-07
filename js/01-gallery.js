@@ -1,43 +1,47 @@
-import { galleryItems } from './gallery-items.js';
+import { galleryItems } from './gallery-items.js'
+
+console.log(galleryItems)
 // Change code below this line
-const gallery = document.querySelector(".gallery");
 
-document.body.addEventListener("keypress", (e) => {
-    if (e.key === "Escape") basicLightbox.close();
-  });
-  
-  for (let item of galleryItems) {
-    const galleryItem = document.createElement("div");
-    galleryItem.classList.add("gallery__item");
-  
-    const galleryLink = document.createElement("a");
-    galleryLink.classList.add("gallery__link");
-    galleryLink.href = item.original;
-  
-    const galleryImage = document.createElement("img");
-    galleryImage.classList.add("gallery__image");
-    galleryImage.src = item.preview;
-    galleryImage.dataset.source = item.original;
-    galleryImage.alt = item.description;
-  
-    galleryLink.appendChild(galleryImage);
-    galleryItem.appendChild(galleryLink);
-    gallery.appendChild(galleryItem);
-  }
-  
-  gallery.addEventListener("click", (event) => {
-    event.preventDefault();
+const gallery = document.querySelector('.gallery')
+const items = []
 
-    const clickedImage = event.target.closest('.gallery__image');
-  if (!clickedImage) {
-    return; 
-  }
-  
-    const lightbox = basicLightbox.create(`
-      <img src="${event.target.dataset.source}" width="800" height="600">
-    `);
-  
-    lightbox.show();
-  });
-  
-console.log(galleryItems);
+galleryItems.forEach(element => {
+	const galleryItem = document.createElement('div')
+	galleryItem.className = 'gallery__item'
+	const galleryLink = document.createElement('a')
+	galleryLink.className = 'gallery__link'
+	galleryLink.href = element.original
+	const galleryImage = document.createElement('img')
+    galleryImage.className = 'gallery__image'
+    galleryImage.src = element.preview;
+    galleryImage.setAttribute('data-source', element.original)
+    galleryImage.alt = element.description;
+
+	galleryItem.append(galleryLink)
+	galleryLink.append(galleryImage)
+	items.push(galleryItem)
+})
+
+gallery.append(...items)
+
+gallery.addEventListener('click', e => {
+    e.preventDefault();
+    if (e.target.nodeName !== 'IMG') {
+		return
+	}
+
+    const selectedImage = e.target.getAttribute('data-source')
+
+    const instance = basicLightbox.create(`
+    <img src="${selectedImage}" width="800" height="600">
+`)
+
+    instance.show()
+    
+    gallery.addEventListener('keydown', e => {
+		if (e.key === 'Escape') {
+			instance.close()
+		}
+	})
+})
